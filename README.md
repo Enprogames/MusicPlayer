@@ -25,4 +25,3 @@ works slightly differently on Windows and Linux.
 Change volume
 pause
 get and set location of song
-
