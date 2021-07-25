@@ -24,4 +24,5 @@ works slightly differently on Windows and Linux.
 ## Functionality by module
 Change volume
 pause
+get and set location of song
 
