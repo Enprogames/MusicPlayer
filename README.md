@@ -21,7 +21,7 @@ There doesn't seem to be a decent python sound library. This project mostly uses
 module, which allows for many useful functions when working with sound. Unfortunately, it 
 works slightly differently on Windows and Linux. 
 
-## Functionality by module
-Change volume
-pause
-get and set location of song
+## Functionality
+- Change volume
+- pause
+- get and set location of song
