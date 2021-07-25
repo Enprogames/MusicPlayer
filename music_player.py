@@ -38,7 +38,6 @@ def play():
             length = MP3(file).info.length
             # length = get_duration('song.ogg')
             print(length)
-            # conversionfactor = 220/length
             previous = file
             # metadata = eyed3.load(file)
             # tag = metadata.tag
