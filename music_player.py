@@ -12,6 +12,8 @@ import tkinter as tk
 import pygame as pg
 from mutagen.mp3 import MP3
 
+import window
+
 file = "Fireworks.mp3"
 previous = ""
 length = 0
@@ -22,9 +24,9 @@ platform = platform.system()
 
 
 def play():
-    global file, length, conversion_factor, previous, metadata
-    if locationbox.get() != "":
-        file = locationbox.get()
+    global player_window, file, length, conversion_factor, previous, metadata
+    if player_window.get_song_path_input() != "":
+        file = location_box.get()
         if file[0] == '"' and file[-1] == '"':
             file = file[1:-1]
 
@@ -42,7 +44,7 @@ def play():
             # metadata = eyed3.load(file)
             # tag = metadata.tag
             try:
-                titlelabel.config(text="song title")
+                title_label.config(text="song title")
                 # titlelabel.config(text = tag.title)
             except:
                 pass
@@ -59,14 +61,14 @@ def pause():
         pass
 
 
-def change_volume(_=None):
+def change_song_volume(_=None):
     try:
-        pg.mixer.music.set_volume(volumeslider.get())
+        pg.mixer.music.set_volume(player_window.get_volume_slider_location())
     except:
         pass
 
 
-def change_location(_=None):
+def change_song_location(_=None):
     try:
         pass
         # pg.mixer.music.set_pos(durationslider.get())
@@ -74,59 +76,32 @@ def change_location(_=None):
         pass
 
 
+def canvas_click_event(event_origin):
+    global x0,y0
+    x0 = event_origin.x
+    y0 = event_origin.y
+
+    duration_position = x0-player_window.duration_slider.slider_horizontal_margins
+    if 0 <= duration_position <= player_window.duration_slider.slider_width:
+        player_window.set_duration_slider_position(duration_position)
+
+
 def tick():
     global duration, marker
-    if (pg.mixer.music.get_busy() == 1):
+    if pg.mixer.music.get_busy() == 1:
         duration = round((pg.mixer.music.get_pos() / 1000.0), 2)
         duration = round((duration / length), 2)
-        # print(duration)
-        durationslider.set(duration)
+        player_window.set_duration_slider_position(duration)
 
-        root.after(1, tick)
+        player_window.after(1, tick)
 
 
-root = tk.Tk()
-root.title('Music Player')
-root.geometry("250x250")
-root.pack_propagate(0)
-root.resizable(0, 0)
-root.configure(background='grey')
-
-titlelabel = tk.Label(root, bg="grey", fg="black", font=('consolas', 10, 'bold'))
-titlelabel.place(relx=.5, rely=.15, anchor="center")
-
-locationlabel = tk.Label(root, text="Location of Music File", bg="grey", fg="black")
-locationlabel.place(relx=.5, rely=.3, anchor="center")
-locationbox = tk.Entry(root)
-locationbox.place(relx=.5, rely=.4, anchor="center")
-
-volumeslider = tk.Scale(root, from_=0, to=1, resolution=0.01, bg="grey", fg="white", bd=0, troughcolor="black",
-                        showvalue=0, width=10, highlightcolor="grey", highlightbackground="grey", sliderlength=10,
-                        command=change_volume)
-volumeslider.set(1)
-volumeslider.place(relx=.05, rely=.65, anchor="center")
-
-playbutton = tk.Button(root, text="Play", font=('consolas', 20, 'bold'), bg="grey26", fg="white", command=play)
-playbutton.place(relx=.3, rely=.7, anchor="center")
-
-pausebutton = tk.Button(root, text="Pause", font=('consolas', 20, 'bold'), bg="grey26", fg="white", command=pause)
-pausebutton.place(relx=.7, rely=.7, anchor="center")
-
-# slider for duration
-durationslider = tk.Scale(root, from_=0, to=1, resolution=0.001, bg="grey", fg="white", bd=0, troughcolor="black",
-                          showvalue=0, width=10, sliderlength=7, highlightcolor="grey", highlightbackground="grey",
-                          orient=tk.HORIZONTAL, length=200, command=change_location)
-durationslider.place(relx=.5, rely=.9, anchor="center")
+player_window = window.PlayerWindow(play, pause, change_song_volume, change_song_location)
+player_window.duration_slider.bind("<B1-Motion>", canvas_click_event)
+player_window.show()
 
 # Canvas for showing the duration
 # canvas = tk.Canvas(root, bg="grey", highlightthickness=0, bd=12, width="250", height="10")
 # canvas.create_rectangle(30, 10, 250, 80, outline="grey26", fill="black")
 # marker = canvas.create_rectangle(30, 10, 32, 20, outline="white", fill="white")
 # canvas.place(relx=.5, rely=1, anchor="s")
-
-root.grid_rowconfigure(0, weight=2)
-root.grid_rowconfigure(2, weight=2)
-root.grid_columnconfigure(0, weight=1)
-root.grid_columnconfigure(2, weight=1)
-
-root.mainloop()
