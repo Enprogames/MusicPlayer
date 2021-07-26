@@ -144,4 +144,6 @@ class PlayerWindow(tk.Tk):
         filename = filedialog.askopenfilename(initialdir="/", title="Select a File",
                                               filetypes=(("Music Files", "*.mp3*"), ("all files", "*.*")))
 
+        if self.location_box.get() != '':
+            self.location_box.delete(0, tk.END)
         self.location_box.insert(0, filename)
