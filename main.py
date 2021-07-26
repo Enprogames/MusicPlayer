@@ -8,6 +8,7 @@
 #
 import platform
 import traceback
+import os
 
 import pygame as pg
 from mutagen.mp3 import MP3
@@ -19,10 +20,6 @@ import player
 
 file = "Fireworks.mp3"
 previous = ""
-song_length = 0
-conversion_factor = 0
-duration = 0
-metadata = 0
 platform = platform.system()
 
 
@@ -46,7 +43,7 @@ def play():
         try:
             player_window.set_song_title(metadata['title'][0])
         except KeyError:
-            player_window.set_song_title(file)
+            player_window.set_song_title(os.path.basename(file))
         except Exception as e:
             traceback.print_exc()
         pg.mixer.music.play()
@@ -97,6 +94,8 @@ def tick():
 
         player_window.after(1, tick)
 
+
+player = player.PGPlayer()
 
 player_window = window.PlayerWindow(play, pause, change_song_volume) # create a player window
 
