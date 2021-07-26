@@ -13,12 +13,11 @@ import os
 import pygame as pg
 from mutagen.mp3 import MP3
 import mutagen
-import pydub
 
 import window
 import player
 
-file = "Fireworks.mp3"
+file = "example.mp3"
 previous = ""
 platform = platform.system()
 
