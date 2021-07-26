@@ -34,9 +34,9 @@ def play():
         pg.mixer.music.load(file)
         tick()  # start ticking method (currently only changes location of player window slider as the song plays
 
-        song_length = MP3(file).info.length
         previous = file
         metadata = mutagen.File(file, easy=True)
+        song_length = metadata.info.length
         try:
             player_window.set_song_title(metadata['title'][0])
         except KeyError:
