@@ -19,9 +19,10 @@ A simple program to play music in python
 ## Problem
 There doesn't seem to be a decent python sound library. This project mostly uses pygame's mixer 
 module, which allows for many useful functions when working with sound. Unfortunately, it 
-works slightly differently on Windows and Linux. 
+works slightly differently on Windows and Linux. It doesn't support playback of MP3 files on linux,
+and it also doesn't allow for changing the playback position of wave files on any platform.
 
 ## Functionality
 - Change volume
-- pause
-- get and set location of song
+- Pause
+- Get and set location of song
