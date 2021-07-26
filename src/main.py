@@ -6,7 +6,6 @@
 # be able to get and set location of song
 # be able to change its own volume
 #
-import platform
 import traceback
 import os
 
@@ -19,7 +18,6 @@ import player
 
 file = "example.mp3"
 previous = ""
-platform = platform.system()
 
 
 def play():
