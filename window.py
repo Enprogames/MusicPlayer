@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog
 
 
 class DurationSlider(tk.Canvas):
@@ -19,6 +20,8 @@ class DurationSlider(tk.Canvas):
                               slider_horizontal_margins+marker_width,
                               slider_vertical_margins+marker_height, outline="white", fill="white")
 
+        self.marker_position = 0
+
         self.place(relx=.5, rely=1, anchor="s")
 
         self.root = root
@@ -32,16 +35,37 @@ class DurationSlider(tk.Canvas):
     def set_marker_position(self, position):
         """
         Change the position of the marker in this slider canvas
+        :param position: The number of pixels from the start to place the marker
         """
 
         self.coords(self.marker, self.slider_horizontal_margins+position, self.slider_vertical_margins,
                     self.slider_horizontal_margins+self.marker_width+position,
                     self.slider_vertical_margins+self.marker_height)
 
+        self.marker_position = position
+
+    def get_marker_position(self):
+        return self.marker_position
+
+    def set_marker_percentage(self, percentage):
+        """
+        Set the percentage duration for the marker from start to finish. e.g. 0 is the start, and 1.0 is the end.
+        :param percentage: The percentage from start to end to place the marker
+        """
+        position = percentage * self.slider_width
+        self.marker_position = position
+
+        self.coords(self.marker, self.slider_horizontal_margins+position, self.slider_vertical_margins,
+                    self.slider_horizontal_margins+self.marker_width+position,
+                    self.slider_vertical_margins+self.marker_height)
+
+    def get_marker_percentage(self):
+        return self.marker_position / self.slider_width
+
 
 class PlayerWindow(tk.Tk):
 
-    def __init__(self, play_cmd, pause_cmd, change_volume_cmd, change_location_cmd, background_color='grey25'):
+    def __init__(self, play_cmd, pause_cmd, change_volume_cmd, background_color='grey25'):
         """
         Set up all parts of the main player window. Functions for interacting with the player must be given as
         parameters from the program which uses this module.
@@ -60,13 +84,18 @@ class PlayerWindow(tk.Tk):
         self.resizable(0, 0)
         self.configure(background=background_color)
 
-        self.title_label = tk.Label(self, bg=background_color, fg="black", font=('consolas', 10, 'bold'))
+        self.title_font_size = 20
+        self.title_label = tk.Label(self, bg=background_color, fg="black", font=('consolas', 20, 'bold'))
         self.title_label.place(relx=.5, rely=.15, anchor="center")
 
         location_label = tk.Label(self, text="Location of Music File", bg=background_color, fg="black")
         location_label.place(relx=.5, rely=.3, anchor="center")
         self.location_box = tk.Entry(self)
-        self.location_box.place(relx=.5, rely=.4, anchor="center")
+        self.location_box.place(relx=.4, rely=.4, anchor="center")
+
+        self.browse_button = tk.Button(self, text="Browse", font=('consolas', 10, 'bold'),
+                                      bg=background_color, fg="white", command=self.browse_files)
+        self.browse_button.place(relx=.8, rely=.4, anchor="center")
 
         play_button = tk.Button(self, text="Play", font=('consolas', 20, 'bold'), bg=background_color, fg="white",
                                 command=play_cmd)
@@ -76,11 +105,28 @@ class PlayerWindow(tk.Tk):
                                  command=pause_cmd)
         pause_button.place(relx=.7, rely=.7, anchor="center")
 
+        self.volume_slider = tk.Scale(self, from_=0, to=1, resolution=0.01, bg="grey", fg="white", bd=0, troughcolor="black",
+                                showvalue=0, width=10, highlightcolor="grey", highlightbackground="grey",
+                                sliderlength=10, command=change_volume_cmd)
+        self.volume_slider.set(1)
+        self.volume_slider.place(relx=.05, rely=.65, anchor="center")
+
         # Canvas for showing the duration
         self.duration_slider = DurationSlider(self)
 
     def show(self):
         self.mainloop()
+
+    def set_song_title(self, title):
+        self.title_font_size = 20
+        self.title_label.config(text=title, fg='white', font=('consolas', self.title_font_size, 'bold'))
+        label_size = self.title_label.winfo_reqwidth()
+        while label_size > self.winfo_width()-20: # reduce the size of the title label if it is greater than 200 pixels long
+            self.title_font_size -= 1
+            self.title_label.config(font=('consolas', self.title_font_size, 'bold'))
+            label_size = self.title_label.winfo_reqwidth()
+
+        self.title_label.place(relx=.5, rely=.15, anchor="center")
 
     def get_song_path_input(self):
         return self.location_box.get()
@@ -90,3 +136,12 @@ class PlayerWindow(tk.Tk):
 
     def set_duration_slider_position(self, position):
         self.duration_slider.set_marker_position(position)
+
+    def set_duration_slider_percentage(self, percentage):
+        self.duration_slider.set_marker_percentage(percentage)
+
+    def browse_files(self):
+        filename = filedialog.askopenfilename(initialdir="/", title="Select a File",
+                                              filetypes=(("Music Files", "*.mp3*"), ("all files", "*.*")))
+
+        self.location_box.insert(0, filename)
