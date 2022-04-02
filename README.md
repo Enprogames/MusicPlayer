@@ -18,6 +18,9 @@ A simple program to play music in python
 4. Now that you're in the virtual environment, install the requirements:
 `pip install -r requirements.txt`
 
+## Usage
+Navigate to root of project, then run `python.exe src/main.py` to run the program.
+
 ## Problem
 There doesn't seem to be a decent python sound library. This project mostly uses pygame's mixer 
 module, which allows for many useful functions when working with sound. Unfortunately, it 
