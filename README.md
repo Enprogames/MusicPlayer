@@ -1,6 +1,8 @@
 # Python Music Player
 A simple program to play music in python
 
+![music-player1](docs/music-player1.JPG)
+
 ## Installation
 1. Clone repository:
 `git clone https://github.com/Enprogames/MusicPlayer.git`
