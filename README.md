@@ -1,5 +1,6 @@
 # Python Music Player
-A simple program to play music in python
+A simple program written in python for playing music. Tkinter was used to create the user interface, pygame.mixer.music was used for playing
+song files, and mutagen was used for gathering metadata about the song files.
 
 ![music-player1](docs/music-player1.JPG)
 
