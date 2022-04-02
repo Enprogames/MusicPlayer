@@ -17,6 +17,7 @@ class PGPlayer:
         pg.mixer.init()
 
         self.position = 0
+        self.metadata = None
 
         self.previous_file: str = ''
 
@@ -35,8 +36,8 @@ class PGPlayer:
             self.previous_file = file_path
 
             try:
-                metadata = mutagen.File(file_path, easy=True)
-                self.song_title = metadata['title'][0]
+                self.metadata = mutagen.File(file_path, easy=True)
+                self.song_title = self.metadata['title'][0]
             except KeyError:
                 self.song_title = os.path.basename(file_path)
 
@@ -44,6 +45,18 @@ class PGPlayer:
 
         else:
             pg.mixer.music.unpause()
+
+    def pause(self):
+        try:
+            pg.mixer.music.pause()
+        except Exception:
+            traceback.print_exc()
+
+    def set_volume(self, volume=None):
+        try:
+            pg.mixer.music.set_volume(float(volume))
+        except pg.error:
+            traceback.print_exc()
 
     def set_pos(self, position=None):
         """

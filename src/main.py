@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # libraries required:
 # mutagen, eyed3, python-magic, pydub, simpleaudio
 # Find new library to replace pygame.mixer.music. It must:
@@ -6,9 +8,15 @@
 # be able to get and set location of song
 # be able to change its own volume
 #
-import traceback
 import os
+import sys
 
+# if os.path.basename(os.getcwd()) == 'src':
+#     sys.stdout = open('console.log', 'w')
+# else:
+#     sys.stdout = open('src/console.log', 'w')
+
+import traceback
 import pygame as pg
 from mutagen.mp3 import MP3
 import mutagen
@@ -16,43 +24,28 @@ import mutagen
 import window
 import player
 
-file = "example.mp3"
+if os.path.basename(os.getcwd()) == 'src':
+    file = "example.mp3"
+else:
+    file = "src/example.mp3"
 previous = ""
 
 
-def play():
-    global player_window, file, song_length, conversion_factor, previous, metadata
+def playbutton_press():
+    global previous
+
     if player_window.get_song_path_input() != "":
         file = player_window.location_box.get()
         if file[0] == '"' and file[-1] == '"':
             file = file[1:-1]
-
-    if file != previous:
-
-        pg.init()
-        pg.mixer.init()
-        pg.mixer.music.load(file)
-        tick()  # start ticking method (currently only changes location of player window slider as the song plays
-
-        previous = file
-        metadata = mutagen.File(file, easy=True)
-        song_length = metadata.info.length
-        try:
-            player_window.set_song_title(metadata['title'][0])
-        except KeyError:
-            player_window.set_song_title(os.path.basename(file))
-        except Exception as e:
-            traceback.print_exc()
-        pg.mixer.music.play()
-
-    pg.mixer.music.unpause()
-    tick()
+        player.play(file)
+        tick()
 
 
 def pause():
     try:
         pg.mixer.music.pause()
-    except Exception as e:
+    except Exception:
         traceback.print_exc()
 
 
@@ -60,13 +53,13 @@ def change_song_volume(_=None):
     try:
         pg.mixer.music.set_volume(player_window.get_volume_slider_location())
     except pg.error:
-        pass
+        traceback.print_exc()
 
 
 def change_song_location(_=None):
     try:
         pg.mixer.music.set_pos(_)
-    except Exception as e:
+    except Exception:
         traceback.print_exc()
 
 
@@ -74,19 +67,22 @@ def canvas_click_event(event_origin):
     x0 = event_origin.x
     y0 = event_origin.y
 
+    # set location to click_position-margins
     duration_position = x0-player_window.duration_slider.slider_horizontal_margins
 
     # if the mouse click is in the location of the slider, set the position and change the song position
     if 0 <= duration_position <= player_window.duration_slider.slider_width:
-        player_window.set_duration_slider_position(duration_position)
-        marker_percentage = player_window.duration_slider.get_marker_percentage()
-        change_song_location(marker_percentage * song_length)
+        duration_percentage = duration_position / player_window.duration_slider.slider_width
+        player_window.set_duration_slider_percentage(duration_percentage)
+        player.set_pos_percentage(duration_percentage)
 
 
 def tick():
-    global duration
+    global duration, metadata
     if pg.mixer.music.get_busy() == 1:
-        duration_percent = round((pg.mixer.music.get_pos() / 1000.0) / song_length, 3)
+        volume = player_window.get_volume_slider_location()
+        player.set_volume(volume)
+        duration_percent = round((pg.mixer.music.get_pos() / 1000.0) / player.metadata.info.length, 3)
         player_window.set_duration_slider_percentage(duration_percent)
 
         player_window.after(1, tick)
@@ -94,9 +90,11 @@ def tick():
 
 player = player.PGPlayer()
 
-player_window = window.PlayerWindow(play, pause, change_song_volume) # create a player window
+player_window = window.PlayerWindow(play_cmd=playbutton_press, pause_cmd=player.pause, change_volume_cmd=player.set_volume)  # create a player window
 
 # create an event listener for clicks on the duration slider
 player_window.duration_slider.bind("<B1-Motion>", canvas_click_event)
 
 player_window.show()  # this must be done last
+
+# tick()
