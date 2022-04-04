@@ -91,7 +91,7 @@ class PlayerWindow(tk.Tk):
         self.title('Music Player')
         self.geometry("250x250")
         self.pack_propagate(0)
-        # self.resizable(0, 0)
+        self.resizable(0, 0)
         self.configure(background=background_color)
 
         self.title_font_size = 20

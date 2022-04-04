@@ -42,27 +42,6 @@ def playbutton_press():
         tick()
 
 
-def pause():
-    try:
-        pg.mixer.music.pause()
-    except Exception:
-        traceback.print_exc()
-
-
-def change_song_volume(_=None):
-    try:
-        pg.mixer.music.set_volume(player_window.get_volume_slider_location())
-    except pg.error:
-        traceback.print_exc()
-
-
-def change_song_location(_=None):
-    try:
-        pg.mixer.music.set_pos(_)
-    except Exception:
-        traceback.print_exc()
-
-
 def canvas_click_event(event_origin):
     x0 = event_origin.x
     y0 = event_origin.y
@@ -82,9 +61,8 @@ def tick():
     if pg.mixer.music.get_busy() == 1:
         volume = player_window.get_volume_slider_location()
         player.set_volume(volume)
-        duration_percent = round((pg.mixer.music.get_pos() / 1000.0) / player.metadata.info.length, 3)
+        duration_percent = round((player.get_pos() / 1000.0) / player.metadata.info.length, 3)
         player_window.set_duration_slider_percentage(duration_percent)
-
         player_window.after(1, tick)
 
 
