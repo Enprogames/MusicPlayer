@@ -52,7 +52,8 @@ def canvas_click_event(event_origin):
         duration_percentage = duration_position / player_window.duration_slider.slider_width
         if not player.is_playing():
             playbutton_press()
-        if player.is_playing():
+            player.pause()
+        if player.is_paused() or player.is_playing():
             player_window.set_duration_slider_percentage(duration_percentage)
             player.set_pos_percentage(duration_percentage)
 

@@ -81,8 +81,9 @@ class PGPlayer:
         :param position: Playback position to set the song to
         :return:
         """
-        if self.is_finished() or self.is_paused():
+        if self.is_finished():
             self.play()
+            self.pause()
 
         self.last_set_pos = position  # time the track was set to last time playback position was set. Used for calculating current playback position
         self.last_set_pos_total = pg.mixer.music.get_pos()  # total time the track has been playing for at this time
