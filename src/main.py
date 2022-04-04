@@ -11,10 +11,10 @@
 import os
 import sys
 
-# if os.path.basename(os.getcwd()) == 'src':
-#     sys.stdout = open('console.log', 'w')
-# else:
-#     sys.stdout = open('src/console.log', 'w')
+if os.path.basename(os.getcwd()) == 'src':
+    sys.stdout = open('console.log', 'w')
+else:
+    sys.stdout = open('src/console.log', 'w')
 
 import traceback
 import pygame as pg
@@ -28,11 +28,9 @@ if os.path.basename(os.getcwd()) == 'src':
     file = "example.mp3"
 else:
     file = "src/example.mp3"
-previous = ""
 
 
 def playbutton_press():
-    global previous
 
     if player_window.get_song_path_input() != "":
         file = player_window.location_box.get()
@@ -52,13 +50,15 @@ def canvas_click_event(event_origin):
     # if the mouse click is in the location of the slider, set the position and change the song position
     if 0 <= duration_position <= player_window.duration_slider.slider_width:
         duration_percentage = duration_position / player_window.duration_slider.slider_width
-        player_window.set_duration_slider_percentage(duration_percentage)
-        player.set_pos_percentage(duration_percentage)
+        if not player.is_playing():
+            playbutton_press()
+        if player.is_playing():
+            player_window.set_duration_slider_percentage(duration_percentage)
+            player.set_pos_percentage(duration_percentage)
 
 
 def tick():
-    global duration, metadata
-    if pg.mixer.music.get_busy() == 1:
+    if player.is_playing():
         volume = player_window.get_volume_slider_location()
         player.set_volume(volume)
         duration_percent = round((player.get_pos() / 1000.0) / player.metadata.info.length, 3)
@@ -74,5 +74,3 @@ player_window = window.PlayerWindow(play_cmd=playbutton_press, pause_cmd=player.
 player_window.duration_slider.bind("<B1-Motion>", canvas_click_event)
 
 player_window.show()  # this must be done last
-
-# tick()

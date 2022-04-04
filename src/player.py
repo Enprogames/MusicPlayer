@@ -32,7 +32,7 @@ class PGPlayer:
 
     def play(self, file_path=None):
 
-        if not self.is_finished():
+        if not self.is_finished() and file_path == self.previous_file:
             pg.mixer.music.unpause()
 
         elif not file_path or file_path == self.previous_file and not self.is_playing():  # if no file path is provided, try to play the previous file
