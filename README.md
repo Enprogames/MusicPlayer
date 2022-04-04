@@ -1,5 +1,6 @@
 # Python Music Player
-A simple program to play music in python
+A simple program written in python for playing music. Tkinter was used to create the user interface, pygame.mixer.music was used for playing
+song files, and mutagen was used for gathering metadata about the song files.
 
 ![music-player1](docs/music-player1.JPG)
 
@@ -17,6 +18,9 @@ A simple program to play music in python
    
 4. Now that you're in the virtual environment, install the requirements:
 `pip install -r requirements.txt`
+
+## Usage
+Navigate to root of project, then run `python.exe src/main.py` to run the program.
 
 ## Problem
 There doesn't seem to be a decent python sound library. This project mostly uses pygame's mixer 
